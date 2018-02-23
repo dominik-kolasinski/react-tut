@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './App.css';
 
 const list = [
@@ -21,6 +21,7 @@ const list = [
 ];
 
 const counter = 0;
+const searchTerm = '';
 
 class App extends Component {
 
@@ -30,6 +31,7 @@ class App extends Component {
     this.state = {
       list,
       counter,
+      searchTerm
     };
 
     this.onDismiss = this.onDismiss.bind(this);
@@ -42,42 +44,46 @@ class App extends Component {
     this.setState({list: updatedList, counter: updatedCounter});
   }
 
-  onSearchChange() {
-
+  onSearchChange(event) {
+    console.log(event.target.value);
+    this.setState({searchTerm: event.target.value});
   }
 
-  render() {
-    return (
-      <div className="App">
+    render()
+    {
+      return (
+        <div className="App">
           <form>
-              <input type="text"
-              onChange={this.onSearchChange}/>
+            <input type="text"
+                   onChange={this.onSearchChange}/>
           </form>
-        <h1>{this.state.counter}</h1>
-        {this.state.list.map(item => {
-          const onHandleDismiss = () => this.onDismiss(item.objectID);
+          <h1>{this.state.counter}</h1>
+          {this.state.list.map(item => {
+            const onHandleDismiss = () => this.onDismiss(item.objectID);
 
-          return (
-            <div key={item.objectID}>
+            return (
+              <div key={item.objectID}>
               <span>
                   <a href={item.url}>{item.title}</a>
               </span>
-              <span>{item.author}</span>
-              <span>{item.num_comments}</span>
-              <span>{item.points}</span>
-              <span>
+                <span>{item.author}</span>
+                <span>{item.num_comments}</span>
+                <span>{item.points}</span>
+                <span>
               <button
                 onClick={onHandleDismiss}
                 type="button">
                 Dismiss
               </button>
             </span>
-            </div>
-          );
-        })}
-      </div>
-    );
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
   }
-}
 
-export default App;
+  export
+  default
+  App;
