@@ -3,7 +3,7 @@ import './App.css';
 
 const DEFAULT_QUERY = 'redux';
 
-const PATH_BASE =  'https://hn.algolia.com/api/v1';
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 
@@ -13,9 +13,6 @@ const PARAM_SEARCH = 'query=';
 //     return item.title.toLowerCase().includes(searcTerm.toLowerCase());
 //   }
 // }
-
-const isSearched = searchTerm => item =>
-  item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends Component {
 
@@ -30,12 +27,20 @@ class App extends Component {
 
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    this.onDismiss = this.onDismiss.bind(this);
+
+  }
+
+  onSearchSubmit(event) {
+    const {searchTerm} = this.state;
+    this.fetchSearchTopStories(searchTerm);
+    event.preventDefault();
   }
 
   setSearchTopStories(result) {
-    this.setState({ result });
+    this.setState({result});
   }
 
   fetchSearchTopStories(searchTerm) {
@@ -46,7 +51,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const { searchTerm } = this.state;
+    const {searchTerm} = this.state;
     this.fetchSearchTopStories(searchTerm);
   }
 
@@ -56,61 +61,73 @@ class App extends Component {
     const updatedCounter = this.state.counter + 1;
     this.setState({
       result: Object.assign({}, this.state.result, {hits: updatedHits}),
-      // spread syntax alternative (not yeat in ES6):
+      // spread syntax alternative (not yet in ES6):
       // result: {...this.state.result, hits: updatedHits},
       counter: updatedCounter
     });
   }
 
   onSearchChange(event) {
-    console.log(event.target.value);
     this.setState({searchTerm: event.target.value});
   }
 
   render() {
-    const { searchTerm, result, counter } = this.state;
+    const {searchTerm, result, counter} = this.state;
 
-    if (!result) { return null; }
+    if (!result) {
+      return null;
+    }
 
     return (
       <div className="page">
-        <h1>{counter}</h1>
+        <h1>Items dismissed: {counter}</h1>
         <div
           className="interactions">
           <Search
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
           >
             Search
           </Search>
         </div>
-        <Table
-          list={result.hits}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-        />
+        {result
+          ? <Table
+            list={result.hits}
+            onDismiss={this.onDismiss}
+          />
+          : null}
+
       </div>
     );
   }
 }
 
-const Search = ({value, onChange, children}) => {
+const Search = ({
+                  value,
+                  onChange,
+                  onSubmit,
+                  children
+                }) => {
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       {children}
       <input
         type="text"
         value={value}
         onChange={onChange}
       />
+      <button type="submit">
+        {children}
+      </button>
     </form>
   );
 }
 
-const Table = ({list, pattern, onDismiss}) => {
+const Table = ({list, onDismiss}) => {
   return (
     <div className="table">
-      {list.filter(isSearched(pattern)).map(item =>
+      {list.map(item =>
         <div key={item.objectID}
              className="table-row">
             <span>
@@ -120,11 +137,15 @@ const Table = ({list, pattern, onDismiss}) => {
           <span> {item.num_comments}</span>
           <span> {item.points}</span>
           <span>
-              <Button onClick={() => onDismiss(item.objectID)}
-                      className="button-inline">
-                Dismiss
-              </Button>
-            </span>
+            <Button onClick={() => onDismiss(item.objectID)}
+                    className="button-inline">
+              Dismiss
+            </Button>
+          </span>
+          {item.points > 200
+            ? null
+            : <span><i> over 100 points!</i></span>
+          }
         </div>
       )}
     </div>
