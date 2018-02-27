@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import fetch from 'isomorphic-fetch';
+
 import './App.css';
 
 const DEFAULT_QUERY = 'redux';
@@ -26,6 +28,7 @@ class App extends Component {
       searchKey: '',
       counter: 0,
       searchTerm: DEFAULT_QUERY,
+      error: null,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -39,7 +42,7 @@ class App extends Component {
 
   needsToSearchTopStories(searchTerm) {
     return !this.state.results[searchTerm];
-}
+  }
 
   onSearchSubmit(event) {
     const {searchTerm} = this.state;
@@ -79,7 +82,7 @@ class App extends Component {
       `&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
-      .catch(e => e);
+      .catch(e => this.setState({error: e}));
   }
 
   componentDidMount() {
@@ -89,7 +92,7 @@ class App extends Component {
   }
 
   onDismiss(id) {
-    const {searchKey, results } = this.state;
+    const {searchKey, results} = this.state;
     const {hits, page} = results[searchKey];
 
     const isNotId = item => item.objectID !== id;
@@ -115,7 +118,8 @@ class App extends Component {
       searchTerm,
       results,
       searchKey,
-      counter
+      counter,
+      error
     } = this.state;
 
     const page = (results &&
@@ -128,7 +132,6 @@ class App extends Component {
       results[searchKey] &&
       results[searchKey].hits)
       || [];
-
 
     return (
       <div className="page">
@@ -143,15 +146,22 @@ class App extends Component {
             Search
           </Search>
         </div>
-        <Table
-          list={list}
-          onDismiss={this.onDismiss}
-        />
-        <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-            <h2>More...</h2>
-          </Button>
-        </div>
+        {error
+          ? <div className="interactions">
+            <p>Something went wrong.</p>
+          </div>
+          : <div>
+            <Table
+              list={list}
+              onDismiss={this.onDismiss}/>
+            <div className="interactions">
+              <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+                <h2>More...</h2>
+              </Button>
+            </div>
+          </div>
+        }
+
       </div>
     );
   }
@@ -219,3 +229,9 @@ const Button = ({onClick, className = '', children}) => {
 }
 
 export default App;
+
+export {
+  Button,
+  Search,
+  Table,
+};
