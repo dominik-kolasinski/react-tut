@@ -13,13 +13,6 @@ const PARAM_SEARCH = 'query=';
 const PARAM_PAGE = 'page=';
 const PARAM_HPP = 'hitsPerPage=';
 
-// nice refactor:
-// function isSearched(searchTerm) {
-//   return function(item) {
-//     return item.title.toLowerCase().includes(searcTerm.toLowerCase());
-//   }
-// }
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -161,12 +154,11 @@ class App extends Component {
               list={list}
               onDismiss={this.onDismiss}/>
             <div className="interactions">
-              {isLoading
-                ? <Loading/>
-                : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-                  <h2>More...</h2>
-                </Button>
-              }
+              <ButtonWithLoading
+                isLoading={isLoading}
+                onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+                <h2>More...</h2>
+              </ButtonWithLoading>
             </div>
           </div>
         }
@@ -267,6 +259,12 @@ const Loading = () => {
   )
 }
 
+const withLoading = (Component) => ({isLoading, ...rest}) =>
+  isLoading
+    ? <Loading/>
+    : <Component {...rest} />
+
+const ButtonWithLoading = withLoading(Button);
 export default App;
 
 export {
