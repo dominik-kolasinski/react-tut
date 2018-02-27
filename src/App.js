@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import fetch from 'isomorphic-fetch';
+import FontAwesome from 'react-fontawesome';
 
 import './App.css';
 
@@ -29,6 +30,7 @@ class App extends Component {
       counter: 0,
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -71,11 +73,14 @@ class App extends Component {
       results: {
         ...results,
         [searchKey]: {hits: updatedHits, page}
-      }
+      },
+      isLoading: false
     });
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
+    this.setState({isLoading: true});
+
     fetch(`${PATH_BASE}${PATH_SEARCH}` +
       `?${PARAM_SEARCH}${searchTerm}` +
       `&${PARAM_PAGE}${page}` +
@@ -119,7 +124,8 @@ class App extends Component {
       results,
       searchKey,
       counter,
-      error
+      error,
+      isLoading
     } = this.state;
 
     const page = (results &&
@@ -155,9 +161,12 @@ class App extends Component {
               list={list}
               onDismiss={this.onDismiss}/>
             <div className="interactions">
-              <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
-                <h2>More...</h2>
-              </Button>
+              {isLoading
+                ? <Loading/>
+                : <Button onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}>
+                  <h2>More...</h2>
+                </Button>
+              }
             </div>
           </div>
         }
@@ -166,27 +175,6 @@ class App extends Component {
     );
   }
 }
-
-// const Search = ({
-//                   value,
-//                   onChange,
-//                   onSubmit,
-//                   children
-//                 }) => {
-//   return (
-//     <form onSubmit={onSubmit}>
-//       {children}
-//       <input
-//         type="text"
-//         value={value}
-//         onChange={onChange}
-//       />
-//       <button type="submit">
-//         {children}
-//       </button>
-//     </form>
-//   );
-// }
 
 class Search extends Component {
   moveCaretAtEnd(e) {
@@ -269,10 +257,21 @@ const Button = ({onClick, className = '', children}) => {
   );
 }
 
+const Loading = () => {
+  return (
+    <FontAwesome
+      name="spinner"
+      size="2x"
+      spin
+    />
+  )
+}
+
 export default App;
 
 export {
   Button,
   Search,
   Table,
+  Loading
 };
