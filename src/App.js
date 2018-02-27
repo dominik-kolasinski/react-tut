@@ -167,25 +167,66 @@ class App extends Component {
   }
 }
 
-const Search = ({
-                  value,
-                  onChange,
-                  onSubmit,
-                  children
-                }) => {
-  return (
-    <form onSubmit={onSubmit}>
-      {children}
-      <input
-        type="text"
-        value={value}
-        onChange={onChange}
-      />
-      <button type="submit">
+// const Search = ({
+//                   value,
+//                   onChange,
+//                   onSubmit,
+//                   children
+//                 }) => {
+//   return (
+//     <form onSubmit={onSubmit}>
+//       {children}
+//       <input
+//         type="text"
+//         value={value}
+//         onChange={onChange}
+//       />
+//       <button type="submit">
+//         {children}
+//       </button>
+//     </form>
+//   );
+// }
+
+class Search extends Component {
+  moveCaretAtEnd(e) {
+    var temp_value = e.target.value
+    e.target.value = ''
+    e.target.value = temp_value
+  }
+
+  componentDidMount() {
+    if (this.input) {
+      this.input.focus();
+    }
+  }
+
+  render() {
+    const {
+      value,
+      onChange,
+      onSubmit,
+      children
+    } = this.props;
+
+    return (
+      <form onSubmit={onSubmit}>
         {children}
-      </button>
-    </form>
-  );
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+          ref={(node) => {
+            this.input = node;
+          }}
+          onFocus={this.moveCaretAtEnd}
+        />
+        <button type="submit">
+          {children}
+        </button>
+      </form>
+    );
+  }
 }
 
 const Table = ({list, onDismiss}) => {

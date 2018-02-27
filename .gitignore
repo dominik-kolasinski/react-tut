@@ -9,6 +9,9 @@
 # production
 /build
 
+# tests snapshots
+src/__snapshots__
+
 # misc
 .DS_Store
 .env.local
