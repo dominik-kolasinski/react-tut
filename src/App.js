@@ -50,6 +50,8 @@ class App extends Component {
 
   onSort(sortKey) {
     const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
+    console.log(isSortReverse);
+    console.log(sortKey);
     this.setState({sortKey, isSortReverse});
   }
 
@@ -247,58 +249,78 @@ const Table = ({
   return (
     <div className="table">
       <div className="table-header">
-        <span style={{width: '40%'}}>
+        <span style={{width: '27%'}}>
           <Sort
             sortKey={'TITLE'}
             onSort={onSort}
             activeSortKey={sortKey}>
             Title
+            {sortKey === 'TITLE'
+              ? (isSortReverse
+                  ? <FontAwesome name="arrow-down"/>
+                  : <FontAwesome name="arrow-up"/>
+              ) : null
+            }
           </Sort>
         </span>
-        <span style={{width: '30%'}}>
+        <span style={{width: '27%'}}>
           <Sort
             sortKey={'AUTHOR'}
             onSort={onSort}
             activeSortKey={sortKey}>
             Author
+            {sortKey === 'AUTHOR'
+              ? (isSortReverse
+                  ? <FontAwesome name="arrow-down"/>
+                  : <FontAwesome name="arrow-up"/>
+              ) : null
+            }
           </Sort>
         </span>
-        <span style={{width: '10%'}}>
+        <span style={{width: '8%'}}>
           <Sort
             sortKey={'COMMENTS'}
             onSort={onSort}
             activeSortKey={sortKey}>
             Comments
+            {sortKey === 'COMMENTS'
+              ? (isSortReverse
+                  ? <FontAwesome name="arrow-up"/>
+                  : <FontAwesome name="arrow-down"/>
+              ) : null
+            }
           </Sort>
         </span>
-        <span style={{width: '10%'}}>
+        <span style={{width: '29%'}}>
           <Sort
             sortKey={'POINTS'}
             onSort={onSort}
             activeSortKey={sortKey}>
             Points
+            {sortKey === 'POINTS'
+              ? (isSortReverse
+                  ? <FontAwesome name="arrow-up"/>
+                  : <FontAwesome name="arrow-down"/>
+              ) : null
+            }
           </Sort>
         </span>
       </div>
       {reverseSortedList.map(item =>
         <div key={item.objectID}
              className="table-row">
-            <span>
+            <span style={{width: '30%'}}>
               <a href={item.url}> {item.title}</a>
             </span>
-          <span> {item.author}</span>
-          <span> {item.num_comments}</span>
-          <span> {item.points}</span>
+          <span style={{width: '30%'}}> {item.author}</span>
+          <span style={{width: '10%'}}> {item.num_comments}</span>
+          <span style={{width: '10%'}}> {item.points}</span>
           <span>
             <Button onClick={() => onDismiss(item.objectID)}
                     className="button-inline-dismiss">
               Dismiss
             </Button>
           </span>
-          {item.points >= 200
-            ? <span><i> over 200 points!</i></span>
-            : null
-          }
         </div>
       )}
     </div>
@@ -338,11 +360,12 @@ const Sort = ({
                 sortKey,
                 activeSortKey,
                 onSort,
+                isSortReverse,
                 children,
               }) => {
   const sortClass = classNames(
     'button-inline',
-    {'button-active': sortKey ===activeSortKey}
+    {'button-active': sortKey === activeSortKey}
   );
 
   return (
