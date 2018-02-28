@@ -46,7 +46,7 @@
     padding: 0 5px;
 }
 
-.button-inline {
+.button-inline-dismiss {
     padding: 0.3em;
     border: 1px #FF4C4C solid;
     background: #FFB7B7;
@@ -57,7 +57,18 @@
     cursor: pointer;
 }
 
+.button-inline {
+    padding: 0.3em;
+    border: 1px #0079ff solid;
+    background: #4bc1ff;
+    color: inherit;
+    text-align: inherit;
+    -webkit-font-smoothing: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
 .button-active {
-    border-radius: 0;
-    border-bottom: 1px solid #38BB6C;
+    border: 1px solid #a8bbb5;
+    background-color: #65bb8c;
 }
