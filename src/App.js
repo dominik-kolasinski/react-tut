@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import './App.css';
 
-const DEFAULT_QUERY = 'redux';
+const DEFAULT_QUERY = 'react';
 const DEFAULT_HPP = '100';
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
@@ -22,6 +22,28 @@ const SORTS = {
   COMMENTS: list => sortBy(list, 'num_comments').reverse(),
   POINTS: list => sortBy(list, 'points').reverse(),
 };
+
+
+const updateSearchTopStoriesState = (hits, page) => (prevState) => {
+  const {searchKey, results} = prevState;
+
+  const oldHits = results && results[searchKey]
+    ? results[searchKey].hits
+    : [];
+
+  const updatedHits = [
+    ...oldHits,
+    ...hits,
+  ];
+
+  return ({
+    results: {
+      ...results,
+      [searchKey]: {hits: updatedHits, page}
+    },
+    isLoading: false
+  });
+}
 
 class App extends Component {
   constructor(props) {
@@ -61,24 +83,7 @@ class App extends Component {
 
   setSearchTopStories(result) {
     const {hits, page} = result;
-    const {searchKey, results} = this.state;
-
-    const oldHits = results && results[searchKey]
-      ? results[searchKey].hits
-      : [];
-
-    const updatedHits = [
-      ...oldHits,
-      ...hits,
-    ];
-
-    this.setState({
-      results: {
-        ...results,
-        [searchKey]: {hits: updatedHits, page}
-      },
-      isLoading: false
-    });
+    this.setState(updateSearchTopStoriesState(hits, page));
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
@@ -106,9 +111,8 @@ class App extends Component {
     const isNotId = item => item.objectID !== id;
     const updatedHits = hits.filter(isNotId);
     const updatedCounter = this.state.counter + 1;
+
     this.setState({
-      // result: Object.assign({}, this.state.result, {hits: updatedHits}),
-      // spread syntax alternative (not yet in ES6):
       results: {
         ...results,
         [searchKey]: {hits: updatedHits, page}
@@ -221,7 +225,7 @@ class Search extends Component {
 }
 
 class Table extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -246,7 +250,7 @@ class Table extends Component {
     const {
       sortKey,
       isSortReverse,
-    } =this.state;
+    } = this.state;
 
     const sortedList = SORTS[sortKey](list);
 
